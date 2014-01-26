@@ -177,7 +177,7 @@ class TestStrings(unittest.TestCase):
     with self.assertRaises(Exception):
       JsonStreamer(r'"\a"').pstring()
     with self.assertRaises(Exception):
-      JsonStreamer(r'"\b"').pstring()
+      JsonStreamer(r'"\o"').pstring()
     with self.assertRaises(Exception):
       JsonStreamer(r'"\0"').pstring()
     with self.assertRaises(Exception):
@@ -194,6 +194,13 @@ class TestStrings(unittest.TestCase):
     JsonStreamer(r'"\uabcd"').pstring()
     with self.assertRaises(Exception):
       JsonStreamer(r'"\uadqqag"').pstring()
+
+class TestConstants(unittest.TestCase):
+  
+  def test_true(self):
+    JsonStreamer('true').pconstant()
+    JsonStreamer('false').pconstant()
+    JsonStreamer('null').pconstant()
 
 
 if __name__ == '__main__':
