@@ -1,6 +1,7 @@
 class JsonStreamer(object):
   WHITESPACE = set(' \t\n')
   DIGITS = set('0123456789')
+  NUMBER_STARTERS = set('-0123456789')
 
   def __init__(self):
     self.pos = 0
@@ -133,7 +134,7 @@ class JsonStreamer(object):
   def pvalue(self):
     if self.current == '"':
       self.pstring()
-    elif self.current in self.DIGITS:
+    elif self.current in self.NUMBER_STARTERS:
       self.pnumber()
     elif self.current == '{':
       self.pobject()
@@ -215,3 +216,7 @@ def make_parser(content):
     return IterableJsonStreamer(content)
   else:
     raise Exception("I can only make a parser out of a string or an iterable")
+
+if __name__ == '__main__':
+  import sys
+  make_parser(sys.stdin.read()).parse()

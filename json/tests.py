@@ -151,6 +151,7 @@ class TestArray(unittest.TestCase):
     make_parser('[ ]').parray()
     make_parser('[\n]\n').parray()
     make_parser('[ 1 , 2, 3 ,4,5 ]').parray()
+    make_parser('[1, -2]').parray()
 
 class TestObject(unittest.TestCase):
 
