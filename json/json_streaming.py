@@ -4,7 +4,6 @@ class JsonStreamer(object):
 
   def __init__(self):
     self.pos = 0
-    self._skip_whitespace()
 
   def _expect(self, char):
     if self.current != char:
@@ -173,11 +172,10 @@ class JsonStreamer(object):
 
 class StringJsonStreamer(JsonStreamer):
   def __init__(self, content):
+    super(StringJsonStreamer, self).__init__()
     self.content = content
-    self.pos = 0
     self.max = len(content)
     self._skip_whitespace()
-    super(StringJsonStreamer, self).__init__()
 
   @property
   def done(self):
@@ -195,20 +193,15 @@ class StringJsonStreamer(JsonStreamer):
 
 class IterableJsonStreamer(JsonStreamer):
   def __init__(self, content):
+    super(IterableJsonStreamer, self).__init__()
     self.done = False
     self.content = content
+    self.current = next(content)
     self._skip_whitespace()
-    super(StringJsonStreamer, self).__init__()
-
-  @property
-  def current(self):
-    if self.done:
-      return ''
-    return self.content[self.pos]
 
   def next(self):
     try:
-      next(self.content)
+      self.current = next(self.content)
       self.pos += 1
     except StopIteration:
       self.done = True
