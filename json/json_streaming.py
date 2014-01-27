@@ -1,24 +1,10 @@
 class JsonStreamer(object):
   WHITESPACE = set(' \t\n')
   DIGITS = set('0123456789')
-  def __init__(self, content):
-    self.content = content
+
+  def __init__(self):
     self.pos = 0
-    self.max = len(content)
     self._skip_whitespace()
-
-  @property
-  def done(self):
-    return self.pos >= self.max
-
-  @property
-  def current(self):
-    if self.done:
-      return ''
-    return self.content[self.pos]
-
-  def next(self):
-    self.pos += 1
 
   def _expect(self, char):
     if self.current != char:
@@ -31,7 +17,7 @@ class JsonStreamer(object):
       self._expect(c)
 
   def _skip_whitespace(self):
-    while self.content[self.pos] in self.WHITESPACE:
+    while self.current in self.WHITESPACE:
       self.next()
 
   def pchars(self):
@@ -42,7 +28,7 @@ class JsonStreamer(object):
     state = S_REG
     unicode_chars = ''
 
-    while True:
+    while not self.done:
       c = self.current
       if state == S_REG:
         if c == '\\':
@@ -183,3 +169,55 @@ class JsonStreamer(object):
 
   def parse(self):
     self.pobject()
+
+
+class StringJsonStreamer(JsonStreamer):
+  def __init__(self, content):
+    self.content = content
+    self.pos = 0
+    self.max = len(content)
+    self._skip_whitespace()
+    super(StringJsonStreamer, self).__init__()
+
+  @property
+  def done(self):
+    return self.pos >= self.max
+
+  @property
+  def current(self):
+    if self.done:
+      return ''
+    return self.content[self.pos]
+
+  def next(self):
+    self.pos += 1
+
+
+class IterableJsonStreamer(JsonStreamer):
+  def __init__(self, content):
+    self.done = False
+    self.content = content
+    self._skip_whitespace()
+    super(StringJsonStreamer, self).__init__()
+
+  @property
+  def current(self):
+    if self.done:
+      return ''
+    return self.content[self.pos]
+
+  def next(self):
+    try:
+      next(self.content)
+      self.pos += 1
+    except StopIteration:
+      self.done = True
+
+
+def make_parser(content):
+  if isinstance(content, basestring):
+    return StringJsonStreamer(content)
+  elif hasattr(content, '__iter__'):
+    return IterableJsonStreamer(content)
+  else:
+    raise Exception("I can only make a parser out of a string or an iterable")
