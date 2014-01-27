@@ -205,6 +205,7 @@ class IterableJsonStreamer(JsonStreamer):
       self.pos += 1
     except StopIteration:
       self.done = True
+      self.current = ''
 
 
 def make_parser(content):
