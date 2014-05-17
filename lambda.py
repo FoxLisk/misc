@@ -36,12 +36,7 @@ class Fun(Var):
     def _exec(self):
         return self.func(*[arg.val for arg in self.args])
 
-def _sum(*args):
-    tot = 0
-    for arg in args:
-        tot += arg
-    return tot
-plus = Fun(_sum)
+plus = Fun(lambda *ints: sum(ints))
 
 class Lambda(Fun):
     def __init__(self, arg=None, args=None, fun=None, fargs=None, vals=None):
@@ -91,6 +86,11 @@ assert (
         (Lambda (x) (y)
             (plus (x) (y) (1)))
        )(1)(2)._exec() == 4
+assert (
+((Lambda (x)
+   (plus (x) (1)))
+   (5)))._exec() == 6
+
 '''
 X = (BEGIN
         (SET (F) (LAMBDA (X)
