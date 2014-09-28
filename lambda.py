@@ -36,7 +36,8 @@ class Value(object):
     def has_val(self):
       return True
 
-locals().update({v: Var(name=v) for v in list('abcdefghijklmnopqrstuvwxyz')})
+_locals = locals()
+_locals.update({v: Var(name=v) for v in list('abcdefghijklmnopqrstuvwxyz')})
 
 class Fun(Var):
     def __init__(self, func, args=(), name=None):
@@ -109,6 +110,20 @@ class Lambda(Fun):
         for arg in self.vals[len(self.args):]:
           self.fun = self.fun(arg)
         return self.fun._exec()
+
+def _define(name, val):
+  global _locals
+  if not isinstance(val, Value):
+    val = Value(val)
+  val = Var(val=val, name=name)
+  _locals[name] = val
+
+define = Fun(_define)
+
+(define ('something') (3))._exec()
+
+assert (plus (something) (5))._exec() == 8
+
 
 assert (plus (1) (2))._exec() == 3
 
