@@ -13,7 +13,26 @@ class Summer(object):
         self.sum += other_arg
 
 def columnar(d, *columns):
+    '''
+    extracts each column in columns from d.
+
+    useful for like:
+
+    [columnar(my_dict, 'foo', 'bar') for my_dict in list_of_dicts]
+    '''
     return (d[c] for c in columns)
 
-a, c = columnar({'a': 1, 'b':2, 'c':3}, 'a', 'c')
-print a, c
+class Increment(object):
+    def __init__(self, val=0):
+        self.val = val
+        self._inc = False
+
+    def __pos__(self):
+        if self._inc:
+            self.val += 1
+        self._inc = not self._inc
+        return self
+
+    def __getattr__(self, name):
+        import pudb; pu.db
+        return getattr(self.val, name)
