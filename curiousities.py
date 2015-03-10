@@ -9,7 +9,6 @@ class Summer(object):
         self.sum = 0
 
     def evilmap(self, other_arg):
-        import pudb; pu.db
         self.sum += other_arg
 
 def columnar(d, *columns):
@@ -23,6 +22,12 @@ def columnar(d, *columns):
     return (d[c] for c in columns)
 
 class Increment(object):
+    '''
+    i = Increment()
+    print i.val # 0
+    ++i
+    print i.val # 1
+    '''
     def __init__(self, val=0):
         self.val = val
         self._inc = False
@@ -34,5 +39,4 @@ class Increment(object):
         return self
 
     def __getattr__(self, name):
-        import pudb; pu.db
         return getattr(self.val, name)
