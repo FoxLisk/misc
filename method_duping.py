@@ -17,7 +17,6 @@ def method_duper(cls):
         if not callable(f) or not getattr(f, '_dupe', False):
             continue
 
-
         for i, new_args in enumerate(f._dupe_args):
             mod = maker(f, *new_args)
             name = '%s_%d' % (n, i)
@@ -25,6 +24,7 @@ def method_duper(cls):
             setattr(cls, name, mod)
         delattr(cls, n)
     return cls
+
 
 def dupe_all(*args):
     def _dupe_cls(cls):
@@ -39,7 +39,6 @@ def dupe_all(*args):
     return _dupe_cls
 
 
-
 @method_duper
 @dupe_all('a', 'b')
 class FooAll(object):
@@ -50,6 +49,7 @@ class FooAll(object):
     def another(self, arg):
         return arg
 
+
 @method_duper
 class Foo(object):
     @dupe('x', 'y')
@@ -59,11 +59,10 @@ class Foo(object):
     def unduped(self, arg):
         print arg
 
+
 f = FooAll()
-print f.with_both_0() # 'a'
-print f.with_both_1() # 'b'
-#print f.takes_two_0() # 3
-#print f.takes_two_1() # 20
+print f.with_both_0()  # 'a'
+print f.with_both_1()  # 'b'
 print f.another_0()
 print f.another_1()
 
