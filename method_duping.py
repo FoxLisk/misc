@@ -23,26 +23,51 @@ def method_duper(cls):
             name = '%s_%d' % (n, i)
             mod.func_name = name
             setattr(cls, name, mod)
+        delattr(cls, n)
     return cls
+
+def dupe_all(*args):
+    def _dupe_cls(cls):
+        for n in dir(cls):
+            if n.startswith('__'):
+                continue
+            f = getattr(cls, n)
+            if not callable(f):
+                continue
+            dupe(*args)(f.im_func)
+        return cls
+    return _dupe_cls
+
 
 
 @method_duper
-class Foo(object):
+@dupe_all('a', 'b')
+class FooAll(object):
 
-    @dupe('a', 'b')
     def with_both(self, arg):
         return arg
-
-    @dupe((1, 3), (4, 5))
-    def takes_two(self, a, b):
-        return a * b
 
     def another(self, arg):
         return arg
 
-f = Foo()
+@method_duper
+class Foo(object):
+    @dupe('x', 'y')
+    def duped_this_one(self, arg):
+        print arg
+
+    def unduped(self, arg):
+        print arg
+
+f = FooAll()
 print f.with_both_0() # 'a'
 print f.with_both_1() # 'b'
-print f.takes_two_0() # 3
-print f.takes_two_1() # 20
-print f.another('foo')
+#print f.takes_two_0() # 3
+#print f.takes_two_1() # 20
+print f.another_0()
+print f.another_1()
+
+f = Foo()
+f.duped_this_one_0()
+f.duped_this_one_1()
+f.unduped('z')
